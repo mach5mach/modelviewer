@@ -138,6 +138,20 @@ int main (int argc, char** argv)
 
 void processInput()
 {
+	if(currentScene != NULL){
+		//move this somewhere else
+	
+		if(win.GetKey(GLFW_KEY_LEFT) == GLFW_PRESS)
+		{
+			//hamstring contract
+		}
+		if(win.GetKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
+		{
+			//quad contract
+		}
+	}
+	
+
     if (win.GetKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
         win.SetWindowShouldClose(true);
 
