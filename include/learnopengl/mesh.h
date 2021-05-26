@@ -42,6 +42,7 @@ public:
     unsigned int VAO;
     glm::vec3			position;
     glm::vec3			rotation;
+    float				rotationDeg;
     glm::vec3			scale;
     string			name;
 
@@ -54,7 +55,8 @@ public:
         this->textures = textures;
 
 	   position = glm::vec3(0.0f, 0.0f, 0.0f);
-	   rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	   rotation = glm::vec3(0.0f, 0.0f, 1.0f);
+	   rotationDeg = 0.0f;
 	   scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
@@ -91,6 +93,7 @@ public:
         }
         
         modelMatrix = glm::translate(modelMatrix, position); // translate it down so it's at the center of the scene
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationDeg), rotation);
 	   modelMatrix = glm::scale(modelMatrix, scale);	// it's a bit too big for our scene, so scale it down
         shader.setMat4("model", modelMatrix);
         // draw mesh

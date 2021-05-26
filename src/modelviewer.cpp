@@ -147,25 +147,43 @@ void processInput()
 		//move this somewhere else
 		int hsindex = currentScene->model->GetMeshIndexByName("Hamstring_Hamstring_Muscle");
 		int quadindex = currentScene->model->GetMeshIndexByName("Quad_Quad_Muscle");
+		int femurindex = currentScene->model->GetMeshIndexByName("Femur_Femur_Bone");
+		int tibiaindex = currentScene->model->GetMeshIndexByName("Tibia_Tibia_Bone");
 	
 		if(win.GetKey(GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
 			std::cout << "HS Index: " << hsindex << std::endl;
 			//hamstring contract
-			if(hsindex != -1)
+			if(hsindex != -1 && quadindex != -1)
 			{
+				std::cout << "Knee flexion" << std::endl;
+			
 				currentScene->model->meshes[hsindex].scale[1] *= 0.9;
 				std::cout << "HS scale: " << currentScene->model->meshes[hsindex].scale[1] << std::endl;
+				
+				currentScene->model->meshes[quadindex].scale[1] /= 0.9;
+				std::cout << "Quad scale: " << currentScene->model->meshes[quadindex].scale[1] << std::endl;
+				
+				currentScene->model->meshes[tibiaindex].rotation = glm::vec3(0.0, 0.0, 1.0);
+				currentScene->model->meshes[tibiaindex].rotationDeg -= 10.0f;
+				std::cout << "Tibia rotation: " << currentScene->model->meshes[tibiaindex].rotationDeg << " about " << currentScene->model->meshes[tibiaindex].rotation[0] << ", " << currentScene->model->meshes[tibiaindex].rotation[1] << ", " << currentScene->model->meshes[tibiaindex].rotation[2] << std::endl;
 			}
 		}
 		if(win.GetKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
 			std::cout << "Quad Index: " << quadindex << std::endl;
 			//quad contract
-			if(quadindex != -1)
+			if(hsindex != -1 && quadindex != -1)
 			{
 				currentScene->model->meshes[quadindex].scale[1] *= 0.9;
 				std::cout << "Quad scale: " << currentScene->model->meshes[quadindex].scale[1] << std::endl;
+				
+				currentScene->model->meshes[hsindex].scale[1] /= 0.9;
+				std::cout << "HS scale: " << currentScene->model->meshes[hsindex].scale[1] << std::endl;
+				
+				currentScene->model->meshes[femurindex].rotation = glm::vec3(0.0, 0.0, 1.0);
+				currentScene->model->meshes[tibiaindex].rotationDeg += 10.0f;
+				std::cout << "Tibia rotation: " << currentScene->model->meshes[tibiaindex].rotationDeg << " about " << currentScene->model->meshes[tibiaindex].rotation[0] << ", " << currentScene->model->meshes[tibiaindex].rotation[1] << ", " << currentScene->model->meshes[tibiaindex].rotation[2] << std::endl;
 			}
 		}
 	}
