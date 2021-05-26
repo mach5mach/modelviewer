@@ -107,8 +107,7 @@ class Scene
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, modelPosition); // translate it down so it's at the center of the scene
 			model = glm::scale(model, modelScale);	// it's a bit too big for our scene, so scale it down
-			shader->setMat4("model", model);
-			this->model->Draw(*shader);
+			this->model->Draw(*shader, model);
 
 
 			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

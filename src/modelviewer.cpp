@@ -108,6 +108,11 @@ int main (int argc, char** argv)
 	currentScene = &(scenes[0]);
 	currentScene->Init();
 	
+	for(int i = 0; i < currentScene->model->meshes.size(); i++)
+	{
+		std::cout << "Loaded mesh " << currentScene->model->meshes[i].name << std::endl;
+	}
+	
 	int width, height;
 	glfwGetWindowSize(win.window, &width, &height);
 
@@ -140,14 +145,28 @@ void processInput()
 {
 	if(currentScene != NULL){
 		//move this somewhere else
+		int hsindex = currentScene->model->GetMeshIndexByName("Hamstring_Hamstring_Muscle");
+		int quadindex = currentScene->model->GetMeshIndexByName("Quad_Quad_Muscle");
 	
 		if(win.GetKey(GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
+			std::cout << "HS Index: " << hsindex << std::endl;
 			//hamstring contract
+			if(hsindex != -1)
+			{
+				currentScene->model->meshes[hsindex].scale[1] *= 0.9;
+				std::cout << "HS scale: " << currentScene->model->meshes[hsindex].scale[1] << std::endl;
+			}
 		}
 		if(win.GetKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
+			std::cout << "Quad Index: " << quadindex << std::endl;
 			//quad contract
+			if(quadindex != -1)
+			{
+				currentScene->model->meshes[quadindex].scale[1] *= 0.9;
+				std::cout << "Quad scale: " << currentScene->model->meshes[quadindex].scale[1] << std::endl;
+			}
 		}
 	}
 	

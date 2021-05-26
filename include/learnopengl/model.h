@@ -41,12 +41,23 @@ public:
     }
 
     // draws the model, and thus all its meshes
-    void Draw(Shader &shader)
+    void Draw(Shader &shader, glm::mat4 modelMatrix)
     {
         for(unsigned int i = 0; i < meshes.size(); i++)
-            meshes[i].Draw(shader);
+            meshes[i].Draw(shader, modelMatrix);
     }
     
+    int GetMeshIndexByName(string name)
+    {
+    		for(int i = 0; i < meshes.size(); i++)
+    		{
+    			if(meshes[i].name == name)
+    			{
+    				return i;
+    			}
+    		}
+    		return -1;
+    }
 private:
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(string const &path)
@@ -167,7 +178,7 @@ private:
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
         
         // return a mesh object created from the extracted mesh data
-        return Mesh(vertices, indices, textures);
+        return Mesh(mesh->mName.C_Str(), vertices, indices, textures);
     }
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.

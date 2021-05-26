@@ -40,20 +40,29 @@ public:
     vector<unsigned int> indices;
     vector<Texture>      textures;
     unsigned int VAO;
+    glm::vec3			position;
+    glm::vec3			rotation;
+    glm::vec3			scale;
+    string			name;
 
     // constructor
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
+    Mesh(string name, vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
     {
+    	   this->name = name;
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
+
+	   position = glm::vec3(0.0f, 0.0f, 0.0f);
+	   rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	   scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
     }
 
     // render the mesh
-    void Draw(Shader &shader) 
+    void Draw(Shader &shader, glm::mat4 modelMatrix) 
     {
         // bind appropriate textures
         unsigned int diffuseNr  = 1;
@@ -81,6 +90,9 @@ public:
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
         
+        modelMatrix = glm::translate(modelMatrix, position); // translate it down so it's at the center of the scene
+	   modelMatrix = glm::scale(modelMatrix, scale);	// it's a bit too big for our scene, so scale it down
+        shader.setMat4("model", modelMatrix);
         // draw mesh
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
