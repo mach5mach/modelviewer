@@ -20,6 +20,9 @@
 #include <stdio.h>
 #include <vector>
 
+#include <spdlog/spdlog.h>
+#include "spdlog/sinks/rotating_file_sink.h"
+
 using json = nlohmann::json;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -63,8 +66,19 @@ void error_callback(int error, const char* description)
 	std::cout << "Error: " << description << std::endl;
 }
  
+void initialize_loggers()
+{
+	auto max_size = 1048576 * 5;
+    	auto max_files = 3;
+	auto logger = spdlog::rotating_logger_mt("file", "./logs/modelviewer.txt", max_size, max_files);
+}
+ 
 int main (int argc, char** argv)
 {
+	initialize_loggers();
+
+	spdlog::get("file")->info("Welcome to spdlog!");
+
 	json jsonScene;
 	if(argc > 1)
 	{
