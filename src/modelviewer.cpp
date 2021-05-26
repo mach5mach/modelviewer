@@ -175,6 +175,8 @@ void processInput()
 			//quad contract
 			if(hsindex != -1 && quadindex != -1)
 			{
+				std::cout << "Knee extension" << std::endl;
+			
 				currentScene->model->meshes[quadindex].scale[1] *= 0.9;
 				std::cout << "Quad scale: " << currentScene->model->meshes[quadindex].scale[1] << std::endl;
 				
