@@ -18,6 +18,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <spdlog/spdlog.h>
+
 using json = nlohmann::json;
 
 class Scene
@@ -72,7 +74,8 @@ class Scene
 			GLenum err = glewInit();
 			if(err != GLEW_OK)
 			{
-				std::cout << "glewInit failed: " << glGetString(err) << std::endl;
+				spdlog::get("file")->error("glewInit failed: {}", glGetString(err));
+				spdlog::get("console")->error("glewInit failed: {}", glGetString(err));
 			}
 			
 			glEnable(GL_DEPTH_TEST);

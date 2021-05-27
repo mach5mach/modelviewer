@@ -59,39 +59,68 @@ void pollkeys()
 
 void window_close_callback(GLFWwindow* window)
 {
-	std::cout << "Closing window" << std::endl;
+	spdlog::get("file")->info("Closing window");
+	spdlog::get("console")->info("Closing window");
 }
 
 void error_callback(int error, const char* description)
 {
-	std::cout << "Error: " << description << std::endl;
+	spdlog::get("file")->error("Error: {}", description);
+	spdlog::get("console")->error("Error: {}", description);
 }
  
-void initialize_loggers()
+void initialize_loggers(json log)
 {
 	auto max_size = 1048576 * 5;
     	auto max_files = 3;
-	auto logger = spdlog::rotating_logger_mt("file", "./logs/modelviewer.txt", max_size, max_files);
+	auto logger = spdlog::rotating_logger_mt("file", log["filename"], max_size, max_files);
 	
 	auto console = spdlog::stdout_color_mt("console");
+	
+	spdlog::set_level(log["level"]);
+	
+	spdlog::get("file")->trace("file logger initialized");
+	spdlog::get("console")->trace("console logger initialized");
 }
  
 int main (int argc, char** argv)
 {
-	initialize_loggers();
-
-	spdlog::get("file")->info("Welcome to spdlog!");
-	spdlog::get("console")->info("Welcome to spdlog!");
-
 	json jsonScene;
-	if(argc > 1)
+	if(argc == 2)
 	{
-		std::ifstream inputfile(argv[1]);
-		
-		inputfile >> jsonScene;
-		
-		std::cout << jsonScene << std::endl;
+		try{		
+			std::ifstream inputfile(argv[1]);
+			
+			inputfile >> jsonScene;
+			
+			std::cout << argv[1] << " loaded successfully" << std::endl;
+		}
+		catch(const std::exception&)
+		{
+			std::cout << "Failed to load json file: " << argv[1] << std::endl;
+			std::cout << "Exiting" << std::endl;
+			exit(EXIT_FAILURE);
+		}
 	}
+	else
+	{
+		std::cout << "Must specify exactly one json file" << std::endl;
+		std::cout << "Exiting" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	
+	if(jsonScene.contains("general"))
+	{
+		json general = jsonScene["general"];
+		
+		if(general.contains("log"))
+		{
+			initialize_loggers(general["log"]);
+		}
+	}
+
+	spdlog::get("file")->debug(jsonScene.dump());
+	spdlog::get("console")->debug(jsonScene.dump());
 
 	win = Window(jsonScene["window"]);
 	
@@ -103,7 +132,8 @@ int main (int argc, char** argv)
 	
 	if(!win.Init())
 	{
-		std::cout << "Couldn't initialize glfw" << std::endl;
+		spdlog::get("file")->error("Couldn't initialize glfw");
+		spdlog::get("console")->error("Couldn't initialize glfw");
 		exit(EXIT_FAILURE);
 	}
 	
@@ -128,7 +158,8 @@ int main (int argc, char** argv)
 	
 	for(int i = 0; i < currentScene->model->meshes.size(); i++)
 	{
-		std::cout << "Loaded mesh " << currentScene->model->meshes[i].name << std::endl;
+		spdlog::get("file")->debug(currentScene->model->meshes[i].name);
+		spdlog::get("console")->debug(currentScene->model->meshes[i].name);
 	}
 	
 	int width, height;
@@ -170,40 +201,51 @@ void processInput()
 	
 		if(win.GetKey(GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
-			std::cout << "HS Index: " << hsindex << std::endl;
+			spdlog::get("file")->debug("HS Index: {}", hsindex);
+			spdlog::get("console")->debug("HS Index: {}", hsindex);
+			
 			//hamstring contract
 			if(hsindex != -1 && quadindex != -1)
 			{
-				std::cout << "Knee flexion" << std::endl;
-			
+				spdlog::get("file")->debug("Knee flexion");
+				spdlog::get("console")->debug("Knee flexion");
+							
 				currentScene->model->meshes[hsindex].scale[1] *= 0.9;
-				std::cout << "HS scale: " << currentScene->model->meshes[hsindex].scale[1] << std::endl;
+				spdlog::get("file")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
+				spdlog::get("console")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
 				
 				currentScene->model->meshes[quadindex].scale[1] /= 0.9;
-				std::cout << "Quad scale: " << currentScene->model->meshes[quadindex].scale[1] << std::endl;
+				spdlog::get("file")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
+				spdlog::get("console")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
 				
 				currentScene->model->meshes[tibiaindex].rotation = glm::vec3(0.0, 0.0, 1.0);
 				currentScene->model->meshes[tibiaindex].rotationDeg -= 10.0f;
-				std::cout << "Tibia rotation: " << currentScene->model->meshes[tibiaindex].rotationDeg << " about " << currentScene->model->meshes[tibiaindex].rotation[0] << ", " << currentScene->model->meshes[tibiaindex].rotation[1] << ", " << currentScene->model->meshes[tibiaindex].rotation[2] << std::endl;
+				spdlog::get("file")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
+				spdlog::get("console")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
 			}
 		}
 		if(win.GetKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
-			std::cout << "Quad Index: " << quadindex << std::endl;
+			spdlog::get("file")->debug("Quad Index: {}", quadindex);
+			spdlog::get("console")->debug("Quad Index: {}", quadindex);
 			//quad contract
 			if(hsindex != -1 && quadindex != -1)
 			{
-				std::cout << "Knee extension" << std::endl;
+				spdlog::get("file")->debug("Knee extension");
+				spdlog::get("console")->debug("Knee extension");
 			
 				currentScene->model->meshes[quadindex].scale[1] *= 0.9;
-				std::cout << "Quad scale: " << currentScene->model->meshes[quadindex].scale[1] << std::endl;
+				spdlog::get("file")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
+				spdlog::get("console")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
 				
 				currentScene->model->meshes[hsindex].scale[1] /= 0.9;
-				std::cout << "HS scale: " << currentScene->model->meshes[hsindex].scale[1] << std::endl;
+				spdlog::get("file")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
+				spdlog::get("console")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
 				
 				currentScene->model->meshes[femurindex].rotation = glm::vec3(0.0, 0.0, 1.0);
 				currentScene->model->meshes[tibiaindex].rotationDeg += 10.0f;
-				std::cout << "Tibia rotation: " << currentScene->model->meshes[tibiaindex].rotationDeg << " about " << currentScene->model->meshes[tibiaindex].rotation[0] << ", " << currentScene->model->meshes[tibiaindex].rotation[1] << ", " << currentScene->model->meshes[tibiaindex].rotation[2] << std::endl;
+				spdlog::get("file")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
+				spdlog::get("console")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
 			}
 		}
 	}
