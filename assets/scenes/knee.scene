@@ -1,4 +1,10 @@
 {
+	"general": {
+		"log": {
+			"level": 0,
+			"filename": "./logs/modelviewer.log"
+		}
+	},
 	"window": {
 		"name": "Model Viewer",
 		"width": 1366,

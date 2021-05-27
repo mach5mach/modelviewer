@@ -9,6 +9,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <spdlog/spdlog.h>
+
 using json = nlohmann::json;
 
 class Window
@@ -48,7 +50,8 @@ class Window
 			
 			if(!window)
 			{
-				std::cout << "Couldn't create a window" << std::endl;
+				spdlog::get("file")->error("Couldn't create a window");
+				spdlog::get("console")->error("Couldn't create a window");
 				//Window or OpenGL context creation failed
 				glfwTerminate();
 				exit(EXIT_FAILURE);
