@@ -36,6 +36,7 @@
 			"frag": "./assets/frag_shaders/model_loading.fs"
 		},
 		"models": [{
+			"id": 0,
 			"filename": "./assets/models/knee/obj/knee.obj",
 			"position": [
 				0.0,
@@ -47,6 +48,30 @@
 				1.0,
 				1.0
 			]
-		}]
+		}],
+		"hamstring": {
+			"graphics": {
+				"modelID": 0,
+				"meshname": "Hamstring_Hamstring_Muscle"
+			}
+		},
+		"quad": {
+			"graphics": {
+				"modelID": 0,
+				"meshname": "Quad_Quad_Muscle"
+			}
+		},
+		"femur": {
+			"graphics": {
+				"modelID": 0,
+				"meshname": "Femur_Femur_Bone"
+			}
+		},
+		"tibia": {
+			"graphics": {
+				"modelID": 0,
+				"meshname": "Tibia_Tibia_Bone"
+			}
+		}
 	}]
 }

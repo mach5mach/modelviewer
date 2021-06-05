@@ -6,19 +6,24 @@ BUILD_DIR = ./bin
 TITLE = modelviewer
 CFLAGS=-c -Wall -I${INC_DIR}
 
-DEPS = ${INC_DIR}/glm/vec2.hpp ${INC_DIR}/glm/vec3.hpp ${INC_DIR}/glm/mat4x4.hpp ${INC_DIR}/glm/gtc/matrix_transform.hpp ${INC_DIR}/glm/gtc/type_ptr.hpp ${INC_DIR}/nlohmann/json.hpp
+OBJECTS = ${OBJ_DIR}/hmi/hmiobject.o ${OBJ_DIR}/hmi/hmigraphicsobject.o ${OBJ_DIR}/hmi/hmiphysicsobject.o ${OBJ_DIR}/hmi/hmianatomyobject.o ${OBJ_DIR}/hmi/hmimuscle.o ${OBJ_DIR}/hmi/hmimuscles.o ${OBJ_DIR}/hmi/hmibone.o ${OBJ_DIR}/hmi/hmibones.o ${OBJ_DIR}/hmi/hmiscene.o ${OBJ_DIR}/hmi/hmiwindow.o
+LIBRARIES = -lGLEW -lglfw -lGL -lassimp
 
-all: ${BUILD_DIR}/${TITLE}.exe
-
-${BUILD_DIR}/${TITLE}.exe: ${OBJ_DIR}/${TITLE}.o
-	 mkdir -p ${BUILD_DIR}
-	 ${CC} -o ${BUILD_DIR}/${TITLE}.exe ${OBJ_DIR}/${TITLE}.o -lGLEW -lglfw -lGL -lassimp
-
-${OBJ_DIR}/%.o: ${SRC_DIR}/%.cpp
+#link and build
+${BUILD_DIR}/${TITLE}.exe: ${OBJECTS} ${OBJ_DIR}/${TITLE}.o
+	mkdir -p ${BUILD_DIR}
+	${CC} -o ${BUILD_DIR}/${TITLE}.exe ${OBJECTS} ${OBJ_DIR}/${TITLE}.o ${LIBRARIES}
+	
+#compile TITLE.cpp
+${OBJ_DIR}/${TITLE}.o: ${SRC_DIR}/${TITLE}.cpp
 	 mkdir -p ${OBJ_DIR}
-	 ${CC} ${CFLAGS} -c $< -o $@
- 
-$(OBJ_DIR)/${TITLE}.o: ${DEPS} 
+	 ${CC} ${CFLAGS} -c $^ -o $@
      
+#compile hmi/*.cpp
+${OBJ_DIR}/hmi/%.o: ${SRC_DIR}/hmi/%.cpp
+	mkdir -p ${OBJ_DIR}/hmi
+	${CC} ${CFLAGS} $< -o $@
+     
+#clean
 clean:
 	 rm -r ${OBJ_DIR} ${BUILD_DIR}

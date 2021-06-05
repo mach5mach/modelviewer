@@ -1,7 +1,6 @@
+#include <hmi/hmiwindow.h>
+#include <hmi/hmiscene.h>
 
-// C program to demonstrate
-// drawing a circle using
-// OpenGL
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,30 +9,29 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 #include <nlohmann/json.hpp>
 
-#include <window.h>
-#include <scene.h>
 
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
 #include <vector>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-
 using json = nlohmann::json;
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput();
 
-Window win;
-vector<Scene> scenes;
-Scene* currentScene = NULL;
+hmi::hmiwindow win;
+vector<hmi::hmiscene> scenes;
+hmi::hmiscene* currentScene = NULL;
 
 float lastX;
 float lastY;
@@ -122,7 +120,7 @@ int main (int argc, char** argv)
 	spdlog::get("file")->debug(jsonScene.dump());
 	spdlog::get("console")->debug(jsonScene.dump());
 
-	win = Window(jsonScene["window"]);
+	win = hmi::hmiwindow(jsonScene["window"]);
 	
 	win.SetHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	win.SetHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -149,7 +147,7 @@ int main (int argc, char** argv)
 	
 	for(json::iterator it = jsonScene["scenes"].begin(); it != jsonScene["scenes"].end(); ++it)
 	{
-		Scene scene(*it);
+		hmi::hmiscene scene(*it);
 		scenes.push_back(scene);
 	}	
 	
@@ -163,7 +161,7 @@ int main (int argc, char** argv)
 	}
 	
 	int width, height;
-	glfwGetWindowSize(win.window, &width, &height);
+	glfwGetWindowSize(win.glfwwindow, &width, &height);
 
 	lastX = width / 2.0f;
 	lastY = height / 2.0f;	
@@ -176,7 +174,7 @@ int main (int argc, char** argv)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		currentScene->Render(win);
+		currentScene->Render(&win);
 
 		pollkeys();
 		
