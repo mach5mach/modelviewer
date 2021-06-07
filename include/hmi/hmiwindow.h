@@ -18,6 +18,8 @@ namespace hmi
 	class hmiwindow
 	{
 		public:
+			json config;
+		
 			std::string name;
 			int width;
 			int height;

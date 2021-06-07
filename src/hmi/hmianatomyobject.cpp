@@ -1,5 +1,7 @@
 #include <hmi/hmianatomyobject.h>
 
+#include <spdlog/spdlog.h>
+
 hmi::hmianatomyobject::hmianatomyobject() : hmi::hmiobject()
 {
 	hmigfxobj = nullptr;
@@ -8,6 +10,12 @@ hmi::hmianatomyobject::hmianatomyobject() : hmi::hmiobject()
 
 hmi::hmianatomyobject::hmianatomyobject(json config) : hmi::hmiobject(config)
 {		
+	spdlog::get("file")->trace("hmianatomyobject constructor");
+	spdlog::get("console")->trace("hmianatomyobject constructor");
+	
+	spdlog::get("file")->trace("hmianatomyobject config {}", config.dump());
+	spdlog::get("console")->trace("hmianatomyobject config {}", config.dump());
+
 	hmigfxobj = nullptr;
 	hmiphsxobj = nullptr;
 	
@@ -22,6 +30,9 @@ hmi::hmianatomyobject::hmianatomyobject(json config) : hmi::hmiobject(config)
 }
 
 void hmi::hmianatomyobject::init() {
+	spdlog::get("file")->trace("hmianatomyobject init");
+	spdlog::get("console")->trace("hmianatomyobject init");
+
 	hmigfxobj->init();
 	
 	hmiphsxobj->init();
@@ -33,15 +44,4 @@ void hmi::hmianatomyobject::render(Shader &shader, glm::mat4 modelMatrix) {
 
 hmi::hmianatomyobject::~hmianatomyobject()
 {
-	if(hmigfxobj != nullptr)
-	{
-		delete hmigfxobj;
-	}
-	hmigfxobj = nullptr;
-	
-	if(hmiphsxobj != nullptr)
-	{
-		delete hmiphsxobj;
-	}
-	hmiphsxobj = nullptr;
 }

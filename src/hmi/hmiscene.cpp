@@ -27,45 +27,42 @@ hmi::hmiscene::hmiscene()
 	model = NULL;
 }
 
-hmi::hmiscene::hmiscene(json scene)
+hmi::hmiscene::hmiscene(json config)
 {
-	this->id = scene["id"];
-	this->name = scene["name"];
-	this->clearcolor = glm::vec4(scene["clearcolor"][0], scene["clearcolor"][1], scene["clearcolor"][2], scene["clearcolor"][3]);
+	spdlog::get("file")->trace("hmiscene constructor");
+	spdlog::get("console")->trace("hmiscene constructor");
 	
-	this->vertShaderFileName = scene["shaders"]["vert"];
-	this->geomShaderFileName = scene["shaders"]["geom"];
-	this->fragShaderFileName = scene["shaders"]["frag"];
+	spdlog::get("file")->trace("hmiscene config {}", config.dump());
+	spdlog::get("console")->trace("hmiscene config {}", config.dump());
+
+	this->config = config;
+
+	this->id = config["id"];
+	this->name = config["name"];
+	this->clearcolor = glm::vec4(config["clearcolor"][0], config["clearcolor"][1], config["clearcolor"][2], config["clearcolor"][3]);
 	
-	this->modelFileName = scene["models"][0]["filename"];
-	this->modelPosition = glm::vec3((float)scene["models"][0]["position"][0], (float)scene["models"][0]["position"][1], (float)scene["models"][0]["position"][2]);
-	this->modelScale = glm::vec3((float)scene["models"][0]["scale"][0], (float)scene["models"][0]["scale"][1], (float)scene["models"][0]["scale"][2]);
+	this->vertShaderFileName = config["shaders"]["vert"];
+	this->geomShaderFileName = config["shaders"]["geom"];
+	this->fragShaderFileName = config["shaders"]["frag"];
+	
+	this->modelFileName = config["models"][0]["filename"];
+	this->modelPosition = glm::vec3((float)config["models"][0]["position"][0], (float)config["models"][0]["position"][1], (float)config["models"][0]["position"][2]);
+	this->modelScale = glm::vec3((float)config["models"][0]["scale"][0], (float)config["models"][0]["scale"][1], (float)config["models"][0]["scale"][2]);
 	
 	
-	this->cameraPosition = glm::vec3(scene["camera"]["position"][0], scene["camera"]["position"][1], scene["camera"]["position"][2]);
-	this->cameraClipping = glm::vec2((float)scene["camera"]["clipping"][0], (float)scene["camera"]["clipping"][1]);
+	this->cameraPosition = glm::vec3(config["camera"]["position"][0], config["camera"]["position"][1], config["camera"]["position"][2]);
+	this->cameraClipping = glm::vec2((float)config["camera"]["clipping"][0], (float)config["camera"]["clipping"][1]);
 	
 	camera = NULL;
 	shader = NULL;
 	model = NULL;
-	
-	if(scene.contains("hamstring")){
-		hmi::hmihamstring hs(scene["hamstring"]);
-		anatObjs.push_back(hs);
-	}
-	if(scene.contains("quad")){				
-		anatObjs.push_back(hmi::hmiquad(scene["quad"]));
-	}			
-	if(scene.contains("femur")){
-		anatObjs.push_back(hmi::hmifemur(scene["femur"]));
-	}
-	if(scene.contains("tibia")){
-		anatObjs.push_back(hmi::hmitibia(scene["tibia"]));
-	}
 }
 
 void hmi::hmiscene::Init()
 {
+	spdlog::get("file")->trace("hmiscene init");
+	spdlog::get("console")->trace("hmiscene init");
+	
 	glewExperimental = GL_TRUE;
 
 	GLenum err = glewInit();
@@ -87,8 +84,24 @@ void hmi::hmiscene::Init()
 	
 	camera = new Camera(cameraPosition);
 	
+	if(this->config.contains("hamstring")){		
+		anatObjs.push_back(hmi::hmihamstring(this->config["hamstring"]));
+	}
+	if(this->config.contains("quad")){				
+		anatObjs.push_back(hmi::hmiquad(this->config["quad"]));
+		spdlog::get("console")->trace("quad finished");
+	}			
+	if(this->config.contains("femur")){
+		spdlog::get("console")->trace("femur");
+		anatObjs.push_back(hmi::hmifemur(this->config["femur"]));
+	}
+	if(this->config.contains("tibia")){
+		anatObjs.push_back(hmi::hmitibia(this->config["tibia"]));
+	}
+	
 	for(hmianatomyobject anatObj : anatObjs)
 	{
+		anatObj.hmigfxobj->mesh = &(this->model->meshes[this->model->GetMeshIndexByName(anatObj.hmigfxobj->config["meshname"])]);
 		anatObj.init();
 	}
 }
@@ -127,5 +140,8 @@ void hmi::hmiscene::Render(hmi::hmiwindow* window)
 
 void hmi::hmiscene::ClearColor(glm::vec4 color)
 {
+	spdlog::get("file")->trace("hmiscene clearcolor color {} {} {} {}", color[0], color[1], color[2], color[3]);
+	spdlog::get("console")->trace("hmiscene clearcolor color {} {} {} {}", color[0], color[1], color[2], color[3]);
+	
 	glClearColor(color[0], color[1], color[2], color[3]);
 }

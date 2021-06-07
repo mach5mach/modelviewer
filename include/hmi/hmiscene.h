@@ -9,9 +9,14 @@
 
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <nlohmann/json.hpp>
+
 
 #include <string>
 #include <vector>
+
+
+using json = nlohmann::json;
 
 namespace hmi
 {
@@ -20,6 +25,8 @@ namespace hmi
 	class hmiscene
 	{
 		public:
+			json config;
+		
 			int id;
 			std::string name;
 			glm::vec4 clearcolor;
@@ -30,7 +37,7 @@ namespace hmi
 		
 			hmiscene();
 		
-			hmiscene(json scene);
+			hmiscene(json config);
 			
 			void Init();
 			

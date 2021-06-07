@@ -4,15 +4,20 @@ SRC_DIR = ./src
 OBJ_DIR = ./object
 BUILD_DIR = ./bin
 TITLE = modelviewer
-CFLAGS=-c -Wall -I${INC_DIR}
+CFLAGS= -c -Wall -I${INC_DIR}
 
 OBJECTS = ${OBJ_DIR}/hmi/hmiobject.o ${OBJ_DIR}/hmi/hmigraphicsobject.o ${OBJ_DIR}/hmi/hmiphysicsobject.o ${OBJ_DIR}/hmi/hmianatomyobject.o ${OBJ_DIR}/hmi/hmimuscle.o ${OBJ_DIR}/hmi/hmimuscles.o ${OBJ_DIR}/hmi/hmibone.o ${OBJ_DIR}/hmi/hmibones.o ${OBJ_DIR}/hmi/hmiscene.o ${OBJ_DIR}/hmi/hmiwindow.o
 LIBRARIES = -lGLEW -lglfw -lGL -lassimp
 
 #link and build
-${BUILD_DIR}/${TITLE}.exe: ${OBJECTS} ${OBJ_DIR}/${TITLE}.o
+main: ${OBJECTS} ${OBJ_DIR}/${TITLE}.o
 	mkdir -p ${BUILD_DIR}
 	${CC} -o ${BUILD_DIR}/${TITLE}.exe ${OBJECTS} ${OBJ_DIR}/${TITLE}.o ${LIBRARIES}
+
+#add debug flag to compilation
+debug: CFLAGS = -g -c -Wall -I${INC_DIR}
+	
+debug: main
 	
 #compile TITLE.cpp
 ${OBJ_DIR}/${TITLE}.o: ${SRC_DIR}/${TITLE}.cpp

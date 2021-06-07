@@ -83,13 +83,15 @@ void initialize_loggers(json log)
  
 int main (int argc, char** argv)
 {
-	json jsonScene;
+	std::cout << "program started" << std::endl;
+
+	json config;
 	if(argc == 2)
 	{
 		try{		
 			std::ifstream inputfile(argv[1]);
 			
-			inputfile >> jsonScene;
+			inputfile >> config;
 			
 			std::cout << argv[1] << " loaded successfully" << std::endl;
 		}
@@ -107,9 +109,9 @@ int main (int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 	
-	if(jsonScene.contains("general"))
+	if(config.contains("general"))
 	{
-		json general = jsonScene["general"];
+		json general = config["general"];
 		
 		if(general.contains("log"))
 		{
@@ -117,10 +119,10 @@ int main (int argc, char** argv)
 		}
 	}
 
-	spdlog::get("file")->debug(jsonScene.dump());
-	spdlog::get("console")->debug(jsonScene.dump());
+	spdlog::get("file")->debug(config.dump());
+	spdlog::get("console")->debug(config.dump());
 
-	win = hmi::hmiwindow(jsonScene["window"]);
+	win = hmi::hmiwindow(config["window"]);
 	
 	win.SetHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	win.SetHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -145,7 +147,7 @@ int main (int argc, char** argv)
 	
 	win.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
-	for(json::iterator it = jsonScene["scenes"].begin(); it != jsonScene["scenes"].end(); ++it)
+	for(json::iterator it = config["scenes"].begin(); it != config["scenes"].end(); ++it)
 	{
 		hmi::hmiscene scene(*it);
 		scenes.push_back(scene);
