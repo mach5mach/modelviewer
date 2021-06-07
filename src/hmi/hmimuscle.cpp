@@ -37,6 +37,8 @@ void hmi::hmimuscle::contract(float contractAmount)
 	
 	spdlog::get("file")->trace("contractionState after {}", contractionState);
 	spdlog::get("console")->trace("contractionState after {}", contractionState);
+	
+	this->hmigfxobj->mesh->scale[1] = maxContraction - contractionState;
 }
 
 void hmi::hmimuscle::relax(float contractAmount)
@@ -61,4 +63,11 @@ void hmi::hmimuscle::relax(float contractAmount)
 	
 	spdlog::get("file")->trace("contractionState after {}", contractionState);
 	spdlog::get("console")->trace("contractionState after {}", contractionState);
+	
+	this->hmigfxobj->mesh->scale[1] = maxContraction - contractionState;
+}
+
+void hmi::hmimuscle::render(Shader &shader, glm::mat4 modelMatrix)
+{
+	this->hmianatomyobject::render(shader, modelMatrix);
 }

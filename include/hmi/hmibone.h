@@ -11,6 +11,7 @@ namespace hmi
 			
 			hmibone(json config);
 		
+			virtual void rotate(float rotationDeg, glm::vec3 rotationAxis);
 		protected:
 		
 		private:

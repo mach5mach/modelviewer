@@ -1,5 +1,7 @@
 #include <hmi/hmiwindow.h>
 #include <hmi/hmiscene.h>
+#include <hmi/hmimuscles.h>
+#include <hmi/hmibones.h>
 
 
 #include <GL/glew.h>
@@ -156,7 +158,7 @@ int main (int argc, char** argv)
 	currentScene = &(scenes[0]);
 	currentScene->Init();
 	
-	for(int i = 0; i < currentScene->model->meshes.size(); i++)
+	for(size_t i = 0; i < currentScene->model->meshes.size(); i++)
 	{
 		spdlog::get("file")->debug(currentScene->model->meshes[i].name);
 		spdlog::get("console")->debug(currentScene->model->meshes[i].name);
@@ -193,59 +195,44 @@ int main (int argc, char** argv)
 void processInput()
 {
 	if(currentScene != NULL){
+		float contractAmount = 0.005f;
+		float rotateAmount = 10.0f;
+		glm::vec3 rotation(0.0f, 0.0f, 1.0f);
+	
 		//move this somewhere else
-		int hsindex = currentScene->model->GetMeshIndexByName("Hamstring_Hamstring_Muscle");
-		int quadindex = currentScene->model->GetMeshIndexByName("Quad_Quad_Muscle");
-		int femurindex = currentScene->model->GetMeshIndexByName("Femur_Femur_Bone");
-		int tibiaindex = currentScene->model->GetMeshIndexByName("Tibia_Tibia_Bone");
+		hmi::hmihamstring* hs = dynamic_cast<hmi::hmihamstring*>(currentScene->GetAnatomyObject("hamstring"));
+		hmi::hmiquad* quad = dynamic_cast<hmi::hmiquad*>(currentScene->GetAnatomyObject("quad"));
+		//hmi::hmifemur* femur = currentScene->GetAnatomyObject("femur");
+		hmi::hmitibia* tibia = dynamic_cast<hmi::hmitibia*>(currentScene->GetAnatomyObject("tibia"));
 	
 		if(win.GetKey(GLFW_KEY_LEFT) == GLFW_PRESS)
-		{
-			spdlog::get("file")->debug("HS Index: {}", hsindex);
-			spdlog::get("console")->debug("HS Index: {}", hsindex);
-			
+		{			
 			//hamstring contract
-			if(hsindex != -1 && quadindex != -1)
+			if(hs != nullptr && quad != nullptr && tibia != nullptr)
 			{
 				spdlog::get("file")->debug("Knee flexion");
 				spdlog::get("console")->debug("Knee flexion");
 							
-				currentScene->model->meshes[hsindex].scale[1] *= 0.9;
-				spdlog::get("file")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
-				spdlog::get("console")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
+				hs->contract(contractAmount);
 				
-				currentScene->model->meshes[quadindex].scale[1] /= 0.9;
-				spdlog::get("file")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
-				spdlog::get("console")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
+				quad->relax(contractAmount);
 				
-				currentScene->model->meshes[tibiaindex].rotation = glm::vec3(0.0, 0.0, 1.0);
-				currentScene->model->meshes[tibiaindex].rotationDeg -= 10.0f;
-				spdlog::get("file")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
-				spdlog::get("console")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
+				tibia->rotate(-rotateAmount, rotation);
 			}
 		}
 		if(win.GetKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
-			spdlog::get("file")->debug("Quad Index: {}", quadindex);
-			spdlog::get("console")->debug("Quad Index: {}", quadindex);
 			//quad contract
-			if(hsindex != -1 && quadindex != -1)
+			if(hs != nullptr && quad != nullptr && tibia != nullptr)
 			{
 				spdlog::get("file")->debug("Knee extension");
 				spdlog::get("console")->debug("Knee extension");
 			
-				currentScene->model->meshes[quadindex].scale[1] *= 0.9;
-				spdlog::get("file")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
-				spdlog::get("console")->debug("Quad scale: {}", currentScene->model->meshes[quadindex].scale[1]);
+				hs->relax(contractAmount);
 				
-				currentScene->model->meshes[hsindex].scale[1] /= 0.9;
-				spdlog::get("file")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
-				spdlog::get("console")->debug("HS scale: {}", currentScene->model->meshes[hsindex].scale[1]);
+				quad->contract(contractAmount);
 				
-				currentScene->model->meshes[femurindex].rotation = glm::vec3(0.0, 0.0, 1.0);
-				currentScene->model->meshes[tibiaindex].rotationDeg += 10.0f;
-				spdlog::get("file")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
-				spdlog::get("console")->debug("Tibia rotation: {} about axis {} {} {}", currentScene->model->meshes[tibiaindex].rotationDeg, currentScene->model->meshes[tibiaindex].rotation[0], currentScene->model->meshes[tibiaindex].rotation[1], currentScene->model->meshes[tibiaindex].rotation[2]);
+				tibia->rotate(rotateAmount, rotation);
 			}
 		}
 	}

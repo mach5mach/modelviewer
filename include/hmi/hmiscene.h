@@ -33,7 +33,7 @@ namespace hmi
 			Camera* camera;
 			Shader* shader;
 			Model* model;
-			vector<hmianatomyobject> anatObjs;	
+			vector<hmianatomyobject*> anatObjs;	
 		
 			hmiscene();
 		
@@ -44,6 +44,8 @@ namespace hmi
 			void Render(hmiwindow* window);
 			
 			void ClearColor(glm::vec4 color);
+			
+			hmianatomyobject* GetAnatomyObject(std::string name);
 		private:
 			std::string vertShaderFileName;
 			std::string geomShaderFileName;

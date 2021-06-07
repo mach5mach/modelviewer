@@ -34,7 +34,10 @@ void hmi::hmigraphicsobject::init()
 
 void hmi::hmigraphicsobject::render(Shader &shader, glm::mat4 modelMatrix)
 {
-	this->mesh->Draw(shader, modelMatrix);
+	if(this->mesh != nullptr)
+	{
+		this->mesh->Draw(shader, modelMatrix);
+	}
 }
 
 hmi::hmigraphicsobject::~hmigraphicsobject()

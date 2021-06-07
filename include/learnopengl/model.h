@@ -46,7 +46,7 @@ public:
     
     int GetMeshIndexByName(string name)
     {
-    		for(int i = 0; i < meshes.size(); i++)
+    		for(size_t i = 0; i < meshes.size(); i++)
     		{
     			if(meshes[i].name == name)
     			{

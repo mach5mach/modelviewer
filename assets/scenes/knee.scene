@@ -50,24 +50,28 @@
 			]
 		}],
 		"hamstring": {
+			"name": "hamstring",
 			"graphics": {
 				"modelID": 0,
 				"meshname": "Hamstring_Hamstring_Muscle"
 			}
 		},
 		"quad": {
+			"name": "quad",
 			"graphics": {
 				"modelID": 0,
 				"meshname": "Quad_Quad_Muscle"
 			}
 		},
 		"femur": {
+			"name": "femur",
 			"graphics": {
 				"modelID": 0,
 				"meshname": "Femur_Femur_Bone"
 			}
 		},
 		"tibia": {
+			"name": "tibia",
 			"graphics": {
 				"modelID": 0,
 				"meshname": "Tibia_Tibia_Bone"

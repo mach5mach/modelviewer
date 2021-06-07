@@ -85,24 +85,24 @@ void hmi::hmiscene::Init()
 	camera = new Camera(cameraPosition);
 	
 	if(this->config.contains("hamstring")){		
-		anatObjs.push_back(hmi::hmihamstring(this->config["hamstring"]));
+		anatObjs.push_back(new hmi::hmihamstring(this->config["hamstring"]));
 	}
 	if(this->config.contains("quad")){				
-		anatObjs.push_back(hmi::hmiquad(this->config["quad"]));
+		anatObjs.push_back(new hmi::hmiquad(this->config["quad"]));
 		spdlog::get("console")->trace("quad finished");
 	}			
 	if(this->config.contains("femur")){
 		spdlog::get("console")->trace("femur");
-		anatObjs.push_back(hmi::hmifemur(this->config["femur"]));
+		anatObjs.push_back(new hmi::hmifemur(this->config["femur"]));
 	}
 	if(this->config.contains("tibia")){
-		anatObjs.push_back(hmi::hmitibia(this->config["tibia"]));
+		anatObjs.push_back(new hmi::hmitibia(this->config["tibia"]));
 	}
 	
-	for(hmianatomyobject anatObj : anatObjs)
+	for(hmianatomyobject* anatObj : anatObjs)
 	{
-		anatObj.hmigfxobj->mesh = &(this->model->meshes[this->model->GetMeshIndexByName(anatObj.hmigfxobj->config["meshname"])]);
-		anatObj.init();
+		anatObj->hmigfxobj->mesh = &(this->model->meshes[this->model->GetMeshIndexByName(anatObj->hmigfxobj->config["meshname"])]);
+		anatObj->init();
 	}
 }
 
@@ -127,9 +127,9 @@ void hmi::hmiscene::Render(hmi::hmiwindow* window)
 	model = glm::scale(model, modelScale);	// it's a bit too big for our scene, so scale it down
 	//this->model->Draw(*shader, model);
 
-	for(hmianatomyobject anatObj : anatObjs)
+	for(hmianatomyobject* anatObj : anatObjs)
 	{
-		anatObj.render(*shader, model);
+		anatObj->render(*shader, model);
 	}
 
 	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -144,4 +144,16 @@ void hmi::hmiscene::ClearColor(glm::vec4 color)
 	spdlog::get("console")->trace("hmiscene clearcolor color {} {} {} {}", color[0], color[1], color[2], color[3]);
 	
 	glClearColor(color[0], color[1], color[2], color[3]);
+}
+
+hmi::hmianatomyobject* hmi::hmiscene::GetAnatomyObject(std::string name)
+{
+	for(size_t i = 0; i < anatObjs.size(); i++)
+	{
+		if(anatObjs[i]->name == name)
+		{
+			return anatObjs[i];
+		}
+	}
+	return nullptr;
 }

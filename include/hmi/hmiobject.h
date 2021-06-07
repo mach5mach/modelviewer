@@ -17,7 +17,7 @@ namespace hmi
 		
 			hmiobject(json config);
 			
-			~hmiobject();		
+			virtual ~hmiobject();		
 		protected:
 		
 		

@@ -4,7 +4,8 @@
 
 hmi::hmianatomyobject::hmianatomyobject() : hmi::hmiobject()
 {
-	hmigfxobj = nullptr;
+	this->name = "";
+	this->hmigfxobj = nullptr;
 	hmiphsxobj = nullptr;
 }
 
@@ -13,19 +14,25 @@ hmi::hmianatomyobject::hmianatomyobject(json config) : hmi::hmiobject(config)
 	spdlog::get("file")->trace("hmianatomyobject constructor");
 	spdlog::get("console")->trace("hmianatomyobject constructor");
 	
-	spdlog::get("file")->trace("hmianatomyobject config {}", config.dump());
-	spdlog::get("console")->trace("hmianatomyobject config {}", config.dump());
+	spdlog::get("file")->trace("hmianatomyobject config {}", this->config.dump());
+	spdlog::get("console")->trace("hmianatomyobject config {}", this->config.dump());
 
-	hmigfxobj = nullptr;
-	hmiphsxobj = nullptr;
+	this->name = "";
+	this->hmigfxobj = nullptr;
+	this->hmiphsxobj = nullptr;
 	
-	if(config.contains("graphics"))
+	if(this->config.contains("name"))
 	{
-		hmigfxobj = new hmigraphicsobject(this->config["graphics"]);
+		this->name = this->config["name"];
 	}
-	if(config.contains("physics"))
+	
+	if(this->config.contains("graphics"))
 	{
-		hmiphsxobj = new hmiphysicsobject(this->config["physics"]);
+		this->hmigfxobj = new hmigraphicsobject(this->config["graphics"]);
+	}
+	if(this->config.contains("physics"))
+	{
+		this->hmiphsxobj = new hmiphysicsobject(this->config["physics"]);
 	}
 }
 

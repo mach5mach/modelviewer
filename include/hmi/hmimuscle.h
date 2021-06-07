@@ -18,7 +18,8 @@ namespace hmi
 			void contract(float contractAmount);
 			
 			void relax(float contractAmount);
-		
+			
+			virtual void render(Shader &shader, glm::mat4 modelMatrix);
 		protected:
 		
 		private:

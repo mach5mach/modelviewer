@@ -6,10 +6,14 @@
 #include <hmi/hmigraphicsobject.h>
 #include <hmi/hmiphysicsobject.h>
 
+#include <string>
+
 namespace hmi
 {
 	class hmianatomyobject : public hmiobject {
 		public:
+			std::string name;
+		
 			hmigraphicsobject* hmigfxobj;
 			hmiphysicsobject* hmiphsxobj;		
 		
@@ -18,9 +22,9 @@ namespace hmi
 			
 			void init();
 			
-			void render(Shader &shader, glm::mat4 modelMatrix);
+			virtual void render(Shader &shader, glm::mat4 modelMatrix);
 		
-			~hmianatomyobject();
+			virtual ~hmianatomyobject();
 		
 			/*
 			virtual void ProcessKeyboard(int action, float deltaTime);
